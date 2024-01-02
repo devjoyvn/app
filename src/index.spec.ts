@@ -114,7 +114,7 @@ describe('Configurable Resource Loader', () => {
         expect(superFetch.notCalled).toEqual(true);
     });
 
-    xit('calls super.fetch if a url is NOT in the blacklist', () => {
+    it('calls super.fetch if a url is NOT in the blacklist', () => {
         const options = { blacklist: [/foo/] };
 
         const subject = new ConfigurableResourceLoader(options);
