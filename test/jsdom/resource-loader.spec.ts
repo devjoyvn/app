@@ -18,8 +18,9 @@ describe('JSDOM Resource Loader', () => {
   });
 
   describe(`fetch element option`, () => {
-    it('receives a synchronous script element', () => {
-      const { window } = createJsdom(`
+    describe(`script element`, () => {
+      it('receives a synchronous script element', () => {
+        const { window } = createJsdom(`
 <html>
     <body>
         <script src="https://google.com"></script>
@@ -27,16 +28,52 @@ describe('JSDOM Resource Loader', () => {
 </html>
       `);
 
-      const element = superFetch.getCall(0).args[1]
-        ?.element as HTMLScriptElement;
+        const element = superFetch.getCall(0).args[1]
+          ?.element as HTMLScriptElement;
 
-        // console.log(window);
-      expect(element).toBeInstanceOf(window.HTMLScriptElement);
-      expect(element.src).toEqual("https://google.com/");
+        expect(element.nodeName).toEqual("SCRIPT");
+        expect(element.src).toEqual('https://google.com/');
+      });
+
+      it('receives a deferred script element', () => {
+        const { window } = createJsdom(`
+<html>
+    <body>
+        <script defer src="https://google.com"></script>
+    </body>
+</html>
+      `);
+
+        const element = superFetch.getCall(0).args[1]
+          ?.element as HTMLScriptElement;
+
+        expect(element.nodeName).toEqual("SCRIPT");
+        expect(element.src).toEqual('https://google.com/');
+      });
+
+      it('receives an async script element', () => {
+        const { window } = createJsdom(`
+<html>
+    <body>
+        <script async src="https://google.com"></script>
+    </body>
+</html>
+      `);
+
+        const element = superFetch.getCall(0).args[1]
+          ?.element as HTMLScriptElement;
+
+        expect(element.nodeName).toEqual("SCRIPT");
+        expect(element.src).toEqual('https://google.com/');
+      });
     });
   });
 
-  function createJsdom(html: string): {jsdom: JSDOM, window: DOMWindow, document: Document} /*: {jsdom: JSDOM, window}*/ {
+  function createJsdom(html: string): {
+    jsdom: JSDOM;
+    window: DOMWindow;
+    document: Document;
+  } /*: {jsdom: JSDOM, window}*/ {
     const jsdom = new JSDOM(html, {
       url: `http://localhost/subresource`,
       runScripts: 'dangerously',
