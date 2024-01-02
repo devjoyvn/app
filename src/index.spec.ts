@@ -48,4 +48,14 @@ describe('Configurable Resource Loader', () => {
     expect(actual).toBeNull();
     expect(superFetch.notCalled).toEqual(true);
   });
+  
+  it('returns null for blacklisted urls', () => {
+    const options = { whitelist: [/foo/], blacklist: ["bar"] };
+
+    const subject = new ConfigurableResourceLoader(options);
+    const actual = subject.fetch('bar', {});
+
+    expect(actual).toBeNull();
+    expect(superFetch.notCalled).toEqual(true);
+  });
 });
