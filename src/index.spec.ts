@@ -69,4 +69,14 @@ describe('Configurable Resource Loader', () => {
     expect(actual).toBeNull();
     expect(superFetch.notCalled).toEqual(true);
   });
+
+  it('returns null when whitelist and blacklist are equal', () => {
+    const options = { whitelist: [/foo/], blacklist: [/foo/] };
+
+    const subject = new ConfigurableResourceLoader(options);
+    const actual = subject.fetch('foo', {});
+
+    expect(actual).toBeNull();
+    expect(superFetch.notCalled).toEqual(true);
+  });
 });
