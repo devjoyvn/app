@@ -38,4 +38,14 @@ describe('Configurable Resource Loader', () => {
 
     expect(superFetch.calledOnce).toEqual(true);
   });
+  
+  it('returns null for urls that are not whitelisted', () => {
+    const options = { whitelist: [/foo/] };
+
+    const subject = new ConfigurableResourceLoader(options);
+    const actual = subject.fetch('bar', {});
+
+    expect(actual).toBeNull();
+    expect(superFetch.notCalled).toEqual(true);
+  });
 });
