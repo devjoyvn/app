@@ -10,7 +10,8 @@ describe('Configurable Resource Loader', () => {
     sandbox = sinon.createSandbox();
     superFetch = sandbox
       .stub(jsdom.ResourceLoader.prototype, 'fetch')
-      .returns(null);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .returns({} as any);
   });
 
   afterEach(() => {
@@ -54,6 +55,16 @@ describe('Configurable Resource Loader', () => {
 
     const subject = new ConfigurableResourceLoader(options);
     const actual = subject.fetch('bar', {});
+
+    expect(actual).toBeNull();
+    expect(superFetch.notCalled).toEqual(true);
+  });
+  
+  it('returns null when whitelist and blacklist match', () => {
+    const options = { whitelist: [/foo/], blacklist: [/bar/] };
+
+    const subject = new ConfigurableResourceLoader(options);
+    const actual = subject.fetch('foobar', {});
 
     expect(actual).toBeNull();
     expect(superFetch.notCalled).toEqual(true);

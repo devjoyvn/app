@@ -7,9 +7,14 @@ import {
 
 export type Matcher = string | RegExp;
 
-export type ConfigurableResourceLoaderOptions = {
-  whitelist: Matcher[];
-};
+export type ConfigurableResourceLoaderOptions =
+  | {
+      whitelist: Matcher[];
+    }
+  | {
+      whitelist: Matcher[];
+      blacklist: Matcher[];
+    };
 
 export class ConfigurableResourceLoader extends ResourceLoader {
   options: ConfigurableResourceLoaderOptions;
@@ -21,6 +26,13 @@ export class ConfigurableResourceLoader extends ResourceLoader {
   }
 
   fetch(url: string, options: FetchOptions): AbortablePromise<Buffer> | null {
+    if (
+      'blacklist' in this.options &&
+      this.options.blacklist.some((forbidden) => this.urlMatch(url, forbidden))
+    ) {
+      return null;
+    }
+    
     if (
       this.options.whitelist.length === 0 ||
       this.options.whitelist.some((allowed) => this.urlMatch(url, allowed))
