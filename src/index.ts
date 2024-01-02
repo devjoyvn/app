@@ -12,6 +12,9 @@ export type ConfigurableResourceLoaderOptions =
       whitelist: Matcher[];
     }
   | {
+      blacklist: Matcher[];
+    }
+  | {
       whitelist: Matcher[];
       blacklist: Matcher[];
     };
@@ -32,10 +35,11 @@ export class ConfigurableResourceLoader extends ResourceLoader {
     ) {
       return null;
     }
-    
+
     if (
-      this.options.whitelist.length === 0 ||
-      this.options.whitelist.some((allowed) => this.urlMatch(url, allowed))
+      'whitelist' in this.options &&
+      (this.options.whitelist.length === 0 ||
+        this.options.whitelist.some((allowed) => this.urlMatch(url, allowed)))
     ) {
       return super.fetch(url, options);
     } else {

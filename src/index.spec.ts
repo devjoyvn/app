@@ -102,4 +102,26 @@ describe('Configurable Resource Loader', () => {
       expect(superFetch.calledOnce).toEqual(true);
     });
   });
+
+  describe(`blacklist only`, () => {
+    it('returns null if a url is in the blacklist', () => {
+        const options = { blacklist: [/foobar/] };
+
+        const subject = new ConfigurableResourceLoader(options);
+        const actual = subject.fetch('ooba', {});
+  
+        expect(actual).toBeNull();
+        expect(superFetch.notCalled).toEqual(true);
+    });
+
+    xit('calls super.fetch if a url is NOT in the blacklist', () => {
+        const options = { blacklist: [/foo/] };
+
+        const subject = new ConfigurableResourceLoader(options);
+        const actual = subject.fetch('bar', {});
+  
+        expect(actual).toBeNull();
+        expect(superFetch.notCalled).toEqual(true);
+    });
+  });
 });
