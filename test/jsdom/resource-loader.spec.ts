@@ -21,7 +21,7 @@ describe('JSDOM Resource Loader', () => {
 
   describe(`fetch element option`, () => {
     describe(`iframe`, () => {
-      it('only receives a src url when super.fetch returns null', () => {
+      it('only receives iframe url when super.fetch returns null', () => {
         superFetch.returns(null);
         const { window } = createJsdom(`
 <html>
