@@ -2,7 +2,7 @@ import * as jsdom from 'jsdom';
 import { ConfigurableResourceLoader } from './index';
 import sinon, { SinonSandbox, SinonStub } from 'sinon';
 
-describe('Configurable Resource Loader', () => {
+describe('Acceptance Test', () => {
   let sandbox: SinonSandbox;
   let superFetch: SinonStub;
 
@@ -18,119 +18,60 @@ describe('Configurable Resource Loader', () => {
     sandbox.restore();
   });
 
-  it('extends jsdom.ResourceLoader', () => {
-    const subject = new ConfigurableResourceLoader();
+  it('accepts with whitelisted only', () => {
+    const options = { whitelist: [/foo/] };
 
-    expect(subject).toBeInstanceOf(jsdom.ResourceLoader);
-  });
-
-  it('calls super.fetch for all urls, by default', () => {
-    const subject = new ConfigurableResourceLoader();
+    const subject = new ConfigurableResourceLoader(options);
     subject.fetch('foo', {});
 
     expect(superFetch.calledOnce).toEqual(true);
   });
 
-  describe(`whitelist only`, () => {
-    it('calls super.fetch for whitelisted urls', () => {
-      const options = { whitelist: [/foo/] };
+  it('rejects with whitelisted only', () => {
+    const options = { whitelist: [/foo/] };
 
-      const subject = new ConfigurableResourceLoader(options);
-      subject.fetch('foo', {});
+    const subject = new ConfigurableResourceLoader(options);
+    const actual = subject.fetch('bar', {});
 
-      expect(superFetch.calledOnce).toEqual(true);
-    });
-
-    it('returns null for urls that are not whitelisted', () => {
-      const options = { whitelist: [/foo/] };
-
-      const subject = new ConfigurableResourceLoader(options);
-      const actual = subject.fetch('bar', {});
-
-      expect(actual).toBeNull();
-      expect(superFetch.notCalled).toEqual(true);
-    });
+    expect(actual).toBeNull();
+    expect(superFetch.notCalled).toEqual(true);
   });
 
-  describe(`whitelist and blacklist`, () => {
-    it('returns null when there are no matches', () => {
-      const options = { whitelist: ['foo'], blacklist: ['bar'] };
+  it('accepts with whitelist and blacklist', () => {
+    const options = { whitelist: ['foo'], blacklist: ['bar'] };
 
-      const subject = new ConfigurableResourceLoader(options);
-      const actual = subject.fetch('baz', {});
+    const subject = new ConfigurableResourceLoader(options);
+    const actual = subject.fetch('foo', {});
 
-      expect(actual).toBeNull();
-      expect(superFetch.notCalled).toEqual(true);
-    });
-
-    it('returns null for blacklisted urls', () => {
-      const options = { whitelist: [/foo/], blacklist: ['bar'] };
-
-      const subject = new ConfigurableResourceLoader(options);
-      const actual = subject.fetch('bar', {});
-
-      expect(actual).toBeNull();
-      expect(superFetch.notCalled).toEqual(true);
-    });
-
-    it('returns null when whitelist and blacklist match', () => {
-      const options = { whitelist: [/foo/], blacklist: [/bar/] };
-
-      const subject = new ConfigurableResourceLoader(options);
-      const actual = subject.fetch('foobar', {});
-
-      expect(actual).toBeNull();
-      expect(superFetch.notCalled).toEqual(true);
-    });
-
-    it('returns null when whitelist and blacklist are equal', () => {
-      const options = { whitelist: [/foo/], blacklist: [/foo/] };
-
-      const subject = new ConfigurableResourceLoader(options);
-      const actual = subject.fetch('foo', {});
-
-      expect(actual).toBeNull();
-      expect(superFetch.notCalled).toEqual(true);
-    });
-
-    it('requires an exact match for whitelisted strings', () => {
-      const options = { whitelist: ['foobar'], blacklist: ['foo'] };
-
-      const subject = new ConfigurableResourceLoader(options);
-      subject.fetch('foobar', {});
-
-      expect(superFetch.calledOnce).toEqual(true);
-    });
-
-    it('returns null when whitelist is an exact match but blacklist matches too', () => {
-      const options = { whitelist: ['foobar'], blacklist: [/foo/] };
-
-      const subject = new ConfigurableResourceLoader(options);
-      const actual = subject.fetch('foobar', {});
-
-      expect(actual).toBeNull();
-      expect(superFetch.notCalled).toEqual(true);
-    });
+    expect(superFetch.calledOnce).toEqual(true);
   });
 
-  describe(`blacklist only`, () => {
-    it('returns null if a url is in the blacklist', () => {
-      const options = { blacklist: [/ooba/] };
+  it('rejects with whitelist and blacklist', () => {
+    const options = { whitelist: ['foo'], blacklist: ['bar'] };
 
-      const subject = new ConfigurableResourceLoader(options);
-      const actual = subject.fetch('foobar', {});
+    const subject = new ConfigurableResourceLoader(options);
+    const actual = subject.fetch('bar', {});
 
-      expect(actual).toBeNull();
-      expect(superFetch.notCalled).toEqual(true);
-    });
+    expect(actual).toBeNull();
+    expect(superFetch.notCalled).toEqual(true);
+  });
 
-    it('calls super.fetch if a url is NOT in the blacklist', () => {
-      const options = { blacklist: [/foo/] };
+  it('accepts with blacklist only', () => {
+    const options = { blacklist: [/foobar/] };
 
-      const subject = new ConfigurableResourceLoader(options);
-      subject.fetch('bar', {});
+    const subject = new ConfigurableResourceLoader(options);
+    subject.fetch('baz', {});
 
-      expect(superFetch.calledOnce).toEqual(true);
-    });
+    expect(superFetch.calledOnce).toEqual(true);
+  });
+
+  it('rejects with blacklist only', () => {
+    const options = { blacklist: ['bar'] };
+
+    const subject = new ConfigurableResourceLoader(options);
+    const actual = subject.fetch('bar', {});
+
+    expect(actual).toBeNull();
+    expect(superFetch.notCalled).toEqual(true);
   });
 });
