@@ -4,8 +4,7 @@ import {
   FetchOptions,
   AbortablePromise,
 } from 'jsdom';
-
-export type Matcher = string | RegExp;
+import { Matcher, urlMatches } from './url-matches';
 
 export type ConfigurableResourceLoaderOptions =
   | {
@@ -31,7 +30,7 @@ export class ConfigurableResourceLoader extends ResourceLoader {
   fetch(url: string, options: FetchOptions): AbortablePromise<Buffer> | null {
     if (
       'blacklist' in this.options &&
-      this.options.blacklist.some((forbidden) => this.urlMatch(url, forbidden))
+      this.options.blacklist.some((forbidden) => urlMatches(url, forbidden))
     ) {
       return null;
     }
@@ -39,20 +38,11 @@ export class ConfigurableResourceLoader extends ResourceLoader {
     if (
       'whitelist' in this.options &&
       (this.options.whitelist.length === 0 ||
-        this.options.whitelist.some((allowed) => this.urlMatch(url, allowed)))
+        this.options.whitelist.some((allowed) => urlMatches(url, allowed)))
     ) {
       return super.fetch(url, options);
     } else {
       return null;
-    }
-  }
-
-  private urlMatch(url: string, matcher: Matcher): boolean {
-    switch (typeof matcher) {
-      case 'string':
-        return url === matcher;
-      default:
-        return matcher.test(url);
     }
   }
 }
