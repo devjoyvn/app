@@ -1,5 +1,5 @@
 import { ResourceLoader } from 'jsdom';
-import { ConfigurableResourceLoader } from './index';
+import { ConfigurableResourceLoader } from '.';
 
 describe('Configurable Resource Loader', () => {
   it('extends jsdom.ResourceLoader', () => {
