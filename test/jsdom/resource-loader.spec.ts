@@ -2,8 +2,6 @@ import { JSDOM, ResourceLoader, DOMWindow } from 'jsdom';
 import sinon, { SinonSandbox, SinonStub } from 'sinon';
 
 describe('JSDOM Resource Loader', () => {
-  const embeddedGoogleFormIFrameUrl: string = `https://docs.google.com/forms/d/e/1FAIpQLSc_XJmQM5w3bUW7LbQkbqmSTFm--h9OpU5aJSofcSE04RMITg/viewform?embedded=true`;
-  const embeddedGoogleForm: string = `<iframe src="${embeddedGoogleFormIFrameUrl}" width="640" height="646" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>`;
   let sandbox: SinonSandbox;
   let superFetch: SinonStub;
 
@@ -22,6 +20,8 @@ describe('JSDOM Resource Loader', () => {
   describe(`fetch element option`, () => {
     describe(`iframe`, () => {
       it('only receives iframe url when super.fetch returns null', () => {
+        const embeddedGoogleFormIFrameUrl: string = `https://docs.google.com/forms/d/e/1FAIpQLSc_XJmQM5w3bUW7LbQkbqmSTFm--h9OpU5aJSofcSE04RMITg/viewform?embedded=true`;
+        const embeddedGoogleForm: string = `<iframe src="${embeddedGoogleFormIFrameUrl}" width="640" height="646" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>`;
         superFetch.returns(null);
         const { window } = createJsdom(`
 <html>
@@ -37,6 +37,27 @@ describe('JSDOM Resource Loader', () => {
         expect(element).toBeInstanceOf(window.HTMLIFrameElement);
         expect(element.nodeName).toEqual('IFRAME');
         expect(element.src).toEqual(embeddedGoogleFormIFrameUrl);
+        expect(superFetch.calledOnce).toEqual(true);
+      });
+
+      it('only receives iframe url when super.fetch allows all', () => {
+        superFetch.callThrough();
+        const { window } = createJsdom(`
+<html>
+<body>
+    <iframe src="https://dankaplanses.github.io/jsdom-configurable-resource-loader/test/iframe-test.html"></iframe>
+</body>
+</html>
+    `);
+
+        const element = superFetch.getCall(0).args[1]
+          ?.element as HTMLScriptElement;
+
+        expect(element).toBeInstanceOf(window.HTMLIFrameElement);
+        expect(element.nodeName).toEqual('IFRAME');
+        expect(element.src).toEqual(
+          `https://dankaplanses.github.io/jsdom-configurable-resource-loader/test/iframe-test.html`
+        );
         expect(superFetch.calledOnce).toEqual(true);
       });
     });
