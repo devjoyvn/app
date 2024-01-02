@@ -79,4 +79,13 @@ describe('Configurable Resource Loader', () => {
     expect(actual).toBeNull();
     expect(superFetch.notCalled).toEqual(true);
   });
+
+  it('matches list strings exactly', () => {
+    const options = { whitelist: ["foobar"], blacklist: ["foo"] };
+
+    const subject = new ConfigurableResourceLoader(options);
+    subject.fetch('foobar', {});
+
+    expect(superFetch.calledOnce).toEqual(true);
+  });
 });
