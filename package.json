@@ -12,7 +12,7 @@
   "scripts": {
     "compile-typescript": "tsup",
     "build": "tsup",
-    "test": "jasmine  --random=true --config=\"spec/support/jasmine-spec.json\"",
+    "test": "jasmine --config=\"spec/support/jasmine-spec.json\"",
     "clean": "rm -rf dist"
   },
   "keywords": [
