@@ -53,7 +53,7 @@ describe('Configurable Resource Loader', () => {
   });
 
   describe(`whitelist and blacklist`, () => {
-    it('returns null when a whitelist and blacklist exists and there are no matches', () => {
+    it('returns null when there are no matches', () => {
       const options = { whitelist: ['foo'], blacklist: ['bar'] };
 
       const subject = new ConfigurableResourceLoader(options);
@@ -100,6 +100,16 @@ describe('Configurable Resource Loader', () => {
       subject.fetch('foobar', {});
 
       expect(superFetch.calledOnce).toEqual(true);
+    });
+
+    it('returns null when whitelist is an exact match but blacklist matches too', () => {
+      const options = { whitelist: ['foobar'], blacklist: [/foo/] };
+
+      const subject = new ConfigurableResourceLoader(options);
+      const actual = subject.fetch('foobar', {});
+
+      expect(actual).toBeNull();
+      expect(superFetch.notCalled).toEqual(true);
     });
   });
 
