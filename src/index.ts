@@ -5,8 +5,10 @@ import {
   AbortablePromise,
 } from 'jsdom';
 
+export type Matcher = string | RegExp;
+
 export type ConfigurableResourceLoaderOptions = {
-  whitelist: (string | RegExp)[];
+  whitelist: Matcher[];
 };
 
 export class ConfigurableResourceLoader extends ResourceLoader {
@@ -21,18 +23,20 @@ export class ConfigurableResourceLoader extends ResourceLoader {
   fetch(url: string, options: FetchOptions): AbortablePromise<Buffer> | null {
     if (
       this.options.whitelist.length === 0 ||
-      this.options.whitelist.some((allowed) => {
-        switch (typeof allowed) {
-          case 'string':
-            return url === allowed;
-          default:
-            return allowed.test(url);
-        }
-      })
+      this.options.whitelist.some((allowed) => this.urlMatch(url, allowed))
     ) {
       return super.fetch(url, options);
     } else {
       return null;
+    }
+  }
+
+  private urlMatch(url: string, matcher: Matcher): boolean {
+    switch (typeof matcher) {
+      case 'string':
+        return url === matcher;
+      default:
+        return matcher.test(url);
     }
   }
 }
