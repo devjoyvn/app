@@ -9,7 +9,6 @@ describe('JSDOM Resource Loader', () => {
     sandbox = sinon.createSandbox();
     superFetch = sandbox
       .stub(ResourceLoader.prototype, 'fetch')
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .returns(null);
   });
 
@@ -18,6 +17,51 @@ describe('JSDOM Resource Loader', () => {
   });
 
   describe(`fetch element option`, () => {
+    describe(`img`, () => {
+      it('calls super.fetch on img elements because the canvas package is a dependency', () => {
+        const { window } = createJsdom(`
+<html>
+    <body>
+        <img src="https://picsum.photos/200">
+    </body>
+</html>
+                  `);
+
+        const element = superFetch.getCall(0).args[1]
+          ?.element as HTMLScriptElement;
+
+        expect(element).toBeInstanceOf(window.HTMLImageElement);
+        expect(element.nodeName).toEqual('IMG');
+        expect(element.src).toEqual('https://picsum.photos/200');
+        expect(superFetch.calledOnce).toEqual(true);
+      });
+
+      it('calls super.fetch on each img element even if they\'re equivalent', () => {
+        const { window } = createJsdom(`
+<html>
+    <body>
+        <img src="https://picsum.photos/200">
+        <img src="https://picsum.photos/200">
+    </body>
+</html>
+                  `);
+
+        const element1 = superFetch.getCall(0).args[1]
+          ?.element as HTMLScriptElement;
+        expect(element1).toBeInstanceOf(window.HTMLImageElement);
+        expect(element1.nodeName).toEqual('IMG');
+        expect(element1.src).toEqual('https://picsum.photos/200');
+        
+        const element2 = superFetch.getCall(1).args[1]
+          ?.element as HTMLScriptElement;
+        expect(element2).toBeInstanceOf(window.HTMLImageElement);
+        expect(element2.nodeName).toEqual('IMG');
+        expect(element2.src).toEqual('https://picsum.photos/200');
+
+        expect(superFetch.calledTwice).toEqual(true);
+      });
+    });
+
     describe(`iframe`, () => {
       it('only receives iframe url when super.fetch returns null', () => {
         const embeddedGoogleFormIFrameUrl: string = `https://docs.google.com/forms/d/e/1FAIpQLSc_XJmQM5w3bUW7LbQkbqmSTFm--h9OpU5aJSofcSE04RMITg/viewform?embedded=true`;
