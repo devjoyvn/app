@@ -115,10 +115,10 @@ describe('Configurable Resource Loader', () => {
 
   describe(`blacklist only`, () => {
     it('returns null if a url is in the blacklist', () => {
-      const options = { blacklist: [/foobar/] };
+      const options = { blacklist: [/ooba/] };
 
       const subject = new ConfigurableResourceLoader(options);
-      const actual = subject.fetch('ooba', {});
+      const actual = subject.fetch('foobar', {});
 
       expect(actual).toBeNull();
       expect(superFetch.notCalled).toEqual(true);
@@ -128,10 +128,9 @@ describe('Configurable Resource Loader', () => {
       const options = { blacklist: [/foo/] };
 
       const subject = new ConfigurableResourceLoader(options);
-      const actual = subject.fetch('bar', {});
+      subject.fetch('bar', {});
 
-      expect(actual).toBeNull();
-      expect(superFetch.notCalled).toEqual(true);
+      expect(superFetch.calledOnce).toEqual(true);
     });
   });
 });

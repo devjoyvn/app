@@ -28,11 +28,15 @@ export class ConfigurableResourceLoader extends ResourceLoader {
   }
 
   fetch(url: string, options: FetchOptions): AbortablePromise<Buffer> | null {
-    if (
-      'blacklist' in this.options &&
-      this.options.blacklist.some((forbidden) => urlMatches(url, forbidden))
-    ) {
-      return null;
+    if ('blacklist' in this.options) {
+      if (
+        this.options.blacklist.some((forbidden) => urlMatches(url, forbidden))
+      ) {
+        return null;
+      }
+      if (!('whitelist' in this.options)) {
+        return super.fetch(url, options);
+      }
     }
 
     if (
