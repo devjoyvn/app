@@ -2,6 +2,8 @@ import { JSDOM, ResourceLoader, DOMWindow } from 'jsdom';
 import sinon, { SinonSandbox, SinonStub } from 'sinon';
 
 describe('JSDOM Resource Loader', () => {
+  const embeddedGoogleFormIFrameUrl: string = `https://docs.google.com/forms/d/e/1FAIpQLSc_XJmQM5w3bUW7LbQkbqmSTFm--h9OpU5aJSofcSE04RMITg/viewform?embedded=true`;
+  const embeddedGoogleForm: string = `<iframe src="${embeddedGoogleFormIFrameUrl}" width="640" height="646" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>`;
   let sandbox: SinonSandbox;
   let superFetch: SinonStub;
 
@@ -18,6 +20,27 @@ describe('JSDOM Resource Loader', () => {
   });
 
   describe(`fetch element option`, () => {
+    describe(`iframe`, () => {
+      it('only receives a src url when super.fetch returns null', () => {
+        superFetch.returns(null);
+        const { window } = createJsdom(`
+<html>
+<body>
+    ${embeddedGoogleForm}
+</body>
+</html>
+    `);
+
+        const element = superFetch.getCall(0).args[1]
+          ?.element as HTMLScriptElement;
+
+        expect(element).toBeInstanceOf(window.HTMLIFrameElement);
+        expect(element.nodeName).toEqual('IFRAME');
+        expect(element.src).toEqual(embeddedGoogleFormIFrameUrl);
+        expect(superFetch.calledOnce).toEqual(true);
+      });
+    });
+
     describe(`script element`, () => {
       it('receives a synchronous script element', () => {
         const { window } = createJsdom(`
@@ -31,8 +54,10 @@ describe('JSDOM Resource Loader', () => {
         const element = superFetch.getCall(0).args[1]
           ?.element as HTMLScriptElement;
 
-        expect(element.nodeName).toEqual("SCRIPT");
+        expect(element).toBeInstanceOf(window.HTMLScriptElement);
+        expect(element.nodeName).toEqual('SCRIPT');
         expect(element.src).toEqual('https://google.com/');
+        expect(superFetch.calledOnce).toEqual(true);
       });
 
       it('receives a deferred script element', () => {
@@ -47,8 +72,10 @@ describe('JSDOM Resource Loader', () => {
         const element = superFetch.getCall(0).args[1]
           ?.element as HTMLScriptElement;
 
-        expect(element.nodeName).toEqual("SCRIPT");
+        expect(element).toBeInstanceOf(window.HTMLScriptElement);
+        expect(element.nodeName).toEqual('SCRIPT');
         expect(element.src).toEqual('https://google.com/');
+        expect(superFetch.calledOnce).toEqual(true);
       });
 
       it('receives an async script element', () => {
@@ -63,8 +90,10 @@ describe('JSDOM Resource Loader', () => {
         const element = superFetch.getCall(0).args[1]
           ?.element as HTMLScriptElement;
 
-        expect(element.nodeName).toEqual("SCRIPT");
+        expect(element).toBeInstanceOf(window.HTMLScriptElement);
+        expect(element.nodeName).toEqual('SCRIPT');
         expect(element.src).toEqual('https://google.com/');
+        expect(superFetch.calledOnce).toEqual(true);
       });
     });
   });
