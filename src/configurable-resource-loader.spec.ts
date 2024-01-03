@@ -44,11 +44,24 @@ describe('Configurable Resource Loader', () => {
         return matcher.startsWith('whitelist');
       });
       const options = { whitelist: ['whitelist 1'] };
-
       const subject = new ConfigurableResourceLoader(options);
+
       subject.fetch('url', {});
 
       expect(superFetch.calledOnce).toEqual(true);
+    });
+
+    it('iterates every whitelist element to look for a match', () => {
+      urlMatches.callsFake((url: string, matcher: string) => {
+        return false;
+      });
+      const options = { whitelist: ['whitelist 1', 'whitelist 2'] };
+      const subject = new ConfigurableResourceLoader(options);
+
+      subject.fetch('url', {});
+
+      expect(urlMatches.calledWith('url', 'whitelist 1')).toEqual(true);
+      expect(urlMatches.calledWith('url', 'whitelist 2')).toEqual(true);
     });
 
     it('returns null for urls that are not whitelisted', () => {
@@ -56,8 +69,8 @@ describe('Configurable Resource Loader', () => {
         return !matcher.startsWith('whitelist');
       });
       const options = { whitelist: ['whitelist 1'] };
-
       const subject = new ConfigurableResourceLoader(options);
+
       const actual = subject.fetch('url', {});
 
       expect(actual).toBeNull();
@@ -74,8 +87,8 @@ describe('Configurable Resource Loader', () => {
         whitelist: ['whitelist 1'],
         blacklist: ['blacklist 1'],
       };
-
       const subject = new ConfigurableResourceLoader(options);
+
       const actual = subject.fetch('url', {});
 
       expect(actual).toBeNull();
@@ -90,8 +103,8 @@ describe('Configurable Resource Loader', () => {
         whitelist: ['whitelist 1'],
         blacklist: ['blacklist 1'],
       };
-
       const subject = new ConfigurableResourceLoader(options);
+
       const actual = subject.fetch('url', {});
 
       expect(actual).toBeNull();
@@ -106,8 +119,8 @@ describe('Configurable Resource Loader', () => {
         whitelist: ['whitelist 1'],
         blacklist: ['blacklist 1'],
       };
-
       const subject = new ConfigurableResourceLoader(options);
+
       const actual = subject.fetch('url', {});
 
       expect(actual).toBeNull();
@@ -121,12 +134,25 @@ describe('Configurable Resource Loader', () => {
         return matcher.startsWith('blacklist');
       });
       const options = { blacklist: ['blacklist 1'] };
-
       const subject = new ConfigurableResourceLoader(options);
+
       const actual = subject.fetch('url', {});
 
       expect(actual).toBeNull();
       expect(superFetch.notCalled).toEqual(true);
+    });
+
+    it('iterates every blacklist element to look for a match', () => {
+      urlMatches.callsFake((url: string, matcher: string) => {
+        return false;
+      });
+      const options = { blacklist: ['blacklist 1', 'blacklist 2'] };
+      const subject = new ConfigurableResourceLoader(options);
+
+      subject.fetch('url', {});
+
+      expect(urlMatches.calledWith('url', 'blacklist 1')).toEqual(true);
+      expect(urlMatches.calledWith('url', 'blacklist 2')).toEqual(true);
     });
 
     it('calls super.fetch if a url is NOT in the blacklist', () => {
@@ -134,8 +160,8 @@ describe('Configurable Resource Loader', () => {
         return false;
       });
       const options = { blacklist: ['blacklist 1'] };
-
       const subject = new ConfigurableResourceLoader(options);
+
       subject.fetch('url', {});
 
       expect(superFetch.calledOnce).toEqual(true);
