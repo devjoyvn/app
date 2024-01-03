@@ -1,4 +1,4 @@
-import * as jsdom from 'jsdom';
+import { ResourceLoader } from 'jsdom';
 import { ConfigurableResourceLoader } from './configurable-resource-loader';
 import sinon, { SinonSandbox, SinonStub } from 'sinon';
 
@@ -9,7 +9,7 @@ describe('Configurable Resource Loader', () => {
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     superFetch = sandbox
-      .stub(jsdom.ResourceLoader.prototype, 'fetch')
+      .stub(ResourceLoader.prototype, 'fetch')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .returns({} as any);
   });
@@ -21,7 +21,7 @@ describe('Configurable Resource Loader', () => {
   it('extends jsdom.ResourceLoader', () => {
     const subject = new ConfigurableResourceLoader();
 
-    expect(subject).toBeInstanceOf(jsdom.ResourceLoader);
+    expect(subject).toBeInstanceOf(ResourceLoader);
   });
 
   it('calls super.fetch for all urls, by default', () => {
