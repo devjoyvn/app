@@ -24,4 +24,10 @@ describe('urlMatches', () => {
       urlMatches(`foo`, '');
     }).toThrowError(/blank/);
   });
+
+  it('throws an error for blank RegExp patterns', () => {
+    expect(() => {
+      urlMatches(`foo`, new RegExp(''));
+    }).toThrowError(/blank/);
+  });
 });
