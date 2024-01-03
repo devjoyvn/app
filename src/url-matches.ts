@@ -10,10 +10,7 @@ export function urlMatches(url: string, matcher: Matcher): boolean {
       }
       return url === matcher;
     default:
-      // Apparently, new RegExp('').source returns "(?:)"
-      // I'm not sure if this is subject to change, so this 
-      // felt like the safest way to compare a regex to a blank pattern:
-      if (matcher.source === new RegExp('').source) {
+      if (isBlankRegExp(matcher)) {
         throw new Error(
           `Invalid matcher: Tried to match '${url}' against a blank RegExp.`
         );
@@ -21,3 +18,10 @@ export function urlMatches(url: string, matcher: Matcher): boolean {
       return matcher.test(url);
   }
 }
+
+const isBlankRegExp = (re: RegExp): boolean => {
+  // Apparently, new RegExp('').source does not return "", it returns "(?:)"
+  // I'm not sure if this is subject to change, so this
+  // felt like the safest way to check if a regex was built with a blank pattern:
+  return re.source === new RegExp('').source;
+};
