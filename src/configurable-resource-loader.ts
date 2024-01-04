@@ -20,6 +20,7 @@ export type ConfigurableResourceLoaderOptions =
 
 export class ConfigurableResourceLoader extends ResourceLoader {
   options: ConfigurableResourceLoaderOptions;
+
   constructor(
     options?: /*ResourceLoaderConstructorOptions | */ ConfigurableResourceLoaderOptions
   ) {

@@ -2,16 +2,15 @@ import { ResourceLoader } from 'jsdom';
 import { ConfigurableResourceLoader } from './configurable-resource-loader';
 import * as urlMatchesModule from './url-matches';
 import sinon, { SinonSandbox, SinonStub } from 'sinon';
-import { Matcher } from './url-matches';
 
 describe('Configurable Resource Loader', () => {
   let sandbox: SinonSandbox;
-  let superFetch: SinonStub;
+  let parentFetch: SinonStub;
   let urlMatches: SinonStub;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    superFetch = sandbox
+    parentFetch = sandbox
       .stub(ResourceLoader.prototype, 'fetch')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .returns({} as any);
@@ -35,7 +34,7 @@ describe('Configurable Resource Loader', () => {
 
     subject.fetch('url', {});
 
-    expect(superFetch.calledOnce).toEqual(true);
+    expect(parentFetch.calledOnce).toEqual(true);
   });
 
   describe(`whitelist only`, () => {
@@ -48,7 +47,7 @@ describe('Configurable Resource Loader', () => {
 
       subject.fetch('url', {});
 
-      expect(superFetch.calledOnce).toEqual(true);
+      expect(parentFetch.calledOnce).toEqual(true);
     });
 
     it('iterates every whitelist element to look for a match', () => {
@@ -74,7 +73,7 @@ describe('Configurable Resource Loader', () => {
       const actual = subject.fetch('url', {});
 
       expect(actual).toBeNull();
-      expect(superFetch.notCalled).toEqual(true);
+      expect(parentFetch.notCalled).toEqual(true);
     });
   });
 
@@ -92,7 +91,7 @@ describe('Configurable Resource Loader', () => {
       const actual = subject.fetch('url', {});
 
       expect(actual).toBeNull();
-      expect(superFetch.notCalled).toEqual(true);
+      expect(parentFetch.notCalled).toEqual(true);
     });
 
     it('returns null for blacklisted urls', () => {
@@ -108,7 +107,7 @@ describe('Configurable Resource Loader', () => {
       const actual = subject.fetch('url', {});
 
       expect(actual).toBeNull();
-      expect(superFetch.notCalled).toEqual(true);
+      expect(parentFetch.notCalled).toEqual(true);
     });
 
     it('returns null when whitelist AND blacklist match', () => {
@@ -124,7 +123,7 @@ describe('Configurable Resource Loader', () => {
       const actual = subject.fetch('url', {});
 
       expect(actual).toBeNull();
-      expect(superFetch.notCalled).toEqual(true);
+      expect(parentFetch.notCalled).toEqual(true);
     });
   });
 
@@ -139,7 +138,7 @@ describe('Configurable Resource Loader', () => {
       const actual = subject.fetch('url', {});
 
       expect(actual).toBeNull();
-      expect(superFetch.notCalled).toEqual(true);
+      expect(parentFetch.notCalled).toEqual(true);
     });
 
     it('iterates every blacklist element to look for a match', () => {
@@ -164,7 +163,7 @@ describe('Configurable Resource Loader', () => {
 
       subject.fetch('url', {});
 
-      expect(superFetch.calledOnce).toEqual(true);
+      expect(parentFetch.calledOnce).toEqual(true);
     });
   });
 });

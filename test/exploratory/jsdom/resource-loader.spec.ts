@@ -3,11 +3,11 @@ import sinon, { SinonSandbox, SinonStub } from 'sinon';
 
 describe('JSDOM Resource Loader', () => {
   let sandbox: SinonSandbox;
-  let superFetch: SinonStub;
+  let parentFetch: SinonStub;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    superFetch = sandbox
+    parentFetch = sandbox
       .stub(ResourceLoader.prototype, 'fetch')
       .returns(null);
   });
@@ -27,13 +27,13 @@ describe('JSDOM Resource Loader', () => {
 </html>
                   `);
 
-        const element = superFetch.getCall(0).args[1]
+        const element = parentFetch.getCall(0).args[1]
           ?.element as HTMLScriptElement;
 
         expect(element).toBeInstanceOf(window.HTMLImageElement);
         expect(element.nodeName).toEqual('IMG');
         expect(element.src).toEqual('https://picsum.photos/200');
-        expect(superFetch.calledOnce).toEqual(true);
+        expect(parentFetch.calledOnce).toEqual(true);
       });
 
       it('calls super.fetch on each img element even if they\'re equivalent', () => {
@@ -46,19 +46,19 @@ describe('JSDOM Resource Loader', () => {
 </html>
                   `);
 
-        const element1 = superFetch.getCall(0).args[1]
+        const element1 = parentFetch.getCall(0).args[1]
           ?.element as HTMLScriptElement;
         expect(element1).toBeInstanceOf(window.HTMLImageElement);
         expect(element1.nodeName).toEqual('IMG');
         expect(element1.src).toEqual('https://picsum.photos/200');
         
-        const element2 = superFetch.getCall(1).args[1]
+        const element2 = parentFetch.getCall(1).args[1]
           ?.element as HTMLScriptElement;
         expect(element2).toBeInstanceOf(window.HTMLImageElement);
         expect(element2.nodeName).toEqual('IMG');
         expect(element2.src).toEqual('https://picsum.photos/200');
 
-        expect(superFetch.calledTwice).toEqual(true);
+        expect(parentFetch.calledTwice).toEqual(true);
       });
     });
 
@@ -66,7 +66,7 @@ describe('JSDOM Resource Loader', () => {
       it('only receives iframe url when super.fetch returns null', () => {
         const embeddedGoogleFormIFrameUrl: string = `https://docs.google.com/forms/d/e/1FAIpQLSc_XJmQM5w3bUW7LbQkbqmSTFm--h9OpU5aJSofcSE04RMITg/viewform?embedded=true`;
         const embeddedGoogleForm: string = `<iframe src="${embeddedGoogleFormIFrameUrl}" width="640" height="646" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>`;
-        superFetch.returns(null);
+        parentFetch.returns(null);
         const { window } = createJsdom(`
 <html>
 <body>
@@ -75,17 +75,17 @@ describe('JSDOM Resource Loader', () => {
 </html>
     `);
 
-        const element = superFetch.getCall(0).args[1]
+        const element = parentFetch.getCall(0).args[1]
           ?.element as HTMLScriptElement;
 
         expect(element).toBeInstanceOf(window.HTMLIFrameElement);
         expect(element.nodeName).toEqual('IFRAME');
         expect(element.src).toEqual(embeddedGoogleFormIFrameUrl);
-        expect(superFetch.calledOnce).toEqual(true);
+        expect(parentFetch.calledOnce).toEqual(true);
       });
 
       it('only receives iframe url when super.fetch allows all', () => {
-        superFetch.callThrough();
+        parentFetch.callThrough();
         const { window } = createJsdom(`
 <html>
 <body>
@@ -94,7 +94,7 @@ describe('JSDOM Resource Loader', () => {
 </html>
     `);
 
-        const element = superFetch.getCall(0).args[1]
+        const element = parentFetch.getCall(0).args[1]
           ?.element as HTMLScriptElement;
 
         expect(element).toBeInstanceOf(window.HTMLIFrameElement);
@@ -102,7 +102,7 @@ describe('JSDOM Resource Loader', () => {
         expect(element.src).toEqual(
           `https://dankaplanses.github.io/jsdom-configurable-resource-loader/test/iframe-test.html`
         );
-        expect(superFetch.calledOnce).toEqual(true);
+        expect(parentFetch.calledOnce).toEqual(true);
       });
     });
 
@@ -116,13 +116,13 @@ describe('JSDOM Resource Loader', () => {
 </html>
       `);
 
-        const element = superFetch.getCall(0).args[1]
+        const element = parentFetch.getCall(0).args[1]
           ?.element as HTMLScriptElement;
 
         expect(element).toBeInstanceOf(window.HTMLScriptElement);
         expect(element.nodeName).toEqual('SCRIPT');
         expect(element.src).toEqual('https://google.com/');
-        expect(superFetch.calledOnce).toEqual(true);
+        expect(parentFetch.calledOnce).toEqual(true);
       });
 
       it('receives a deferred script element', () => {
@@ -134,13 +134,13 @@ describe('JSDOM Resource Loader', () => {
 </html>
       `);
 
-        const element = superFetch.getCall(0).args[1]
+        const element = parentFetch.getCall(0).args[1]
           ?.element as HTMLScriptElement;
 
         expect(element).toBeInstanceOf(window.HTMLScriptElement);
         expect(element.nodeName).toEqual('SCRIPT');
         expect(element.src).toEqual('https://google.com/');
-        expect(superFetch.calledOnce).toEqual(true);
+        expect(parentFetch.calledOnce).toEqual(true);
       });
 
       it('receives an async script element', () => {
@@ -152,13 +152,13 @@ describe('JSDOM Resource Loader', () => {
 </html>
       `);
 
-        const element = superFetch.getCall(0).args[1]
+        const element = parentFetch.getCall(0).args[1]
           ?.element as HTMLScriptElement;
 
         expect(element).toBeInstanceOf(window.HTMLScriptElement);
         expect(element.nodeName).toEqual('SCRIPT');
         expect(element.src).toEqual('https://google.com/');
-        expect(superFetch.calledOnce).toEqual(true);
+        expect(parentFetch.calledOnce).toEqual(true);
       });
     });
   });

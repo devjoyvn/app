@@ -4,11 +4,11 @@ import sinon, { SinonSandbox, SinonStub } from 'sinon';
 
 describe('Acceptance Test', () => {
   let sandbox: SinonSandbox;
-  let superFetch: SinonStub;
+  let parentFetch: SinonStub;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    superFetch = sandbox
+    parentFetch = sandbox
       .stub(jsdom.ResourceLoader.prototype, 'fetch')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .returns({} as any);
@@ -24,7 +24,7 @@ describe('Acceptance Test', () => {
     const subject = new ConfigurableResourceLoader(options);
     subject.fetch('foo', {});
 
-    expect(superFetch.calledOnce).toEqual(true);
+    expect(parentFetch.calledOnce).toEqual(true);
   });
 
   it('rejects with whitelisted only', () => {
@@ -34,7 +34,7 @@ describe('Acceptance Test', () => {
     const actual = subject.fetch('bar', {});
 
     expect(actual).toBeNull();
-    expect(superFetch.notCalled).toEqual(true);
+    expect(parentFetch.notCalled).toEqual(true);
   });
 
   it('accepts with whitelist and blacklist', () => {
@@ -43,7 +43,7 @@ describe('Acceptance Test', () => {
     const subject = new ConfigurableResourceLoader(options);
     const actual = subject.fetch('foo', {});
 
-    expect(superFetch.calledOnce).toEqual(true);
+    expect(parentFetch.calledOnce).toEqual(true);
   });
 
   it('rejects with whitelist and blacklist', () => {
@@ -53,7 +53,7 @@ describe('Acceptance Test', () => {
     const actual = subject.fetch('bar', {});
 
     expect(actual).toBeNull();
-    expect(superFetch.notCalled).toEqual(true);
+    expect(parentFetch.notCalled).toEqual(true);
   });
 
   it('accepts with blacklist only', () => {
@@ -62,7 +62,7 @@ describe('Acceptance Test', () => {
     const subject = new ConfigurableResourceLoader(options);
     subject.fetch('baz', {});
 
-    expect(superFetch.calledOnce).toEqual(true);
+    expect(parentFetch.calledOnce).toEqual(true);
   });
 
   it('rejects with blacklist only', () => {
@@ -72,6 +72,6 @@ describe('Acceptance Test', () => {
     const actual = subject.fetch('bar', {});
 
     expect(actual).toBeNull();
-    expect(superFetch.notCalled).toEqual(true);
+    expect(parentFetch.notCalled).toEqual(true);
   });
 });
