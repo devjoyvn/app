@@ -2,11 +2,11 @@ import sinon, { SinonSandbox, SinonStub } from 'sinon';
 
 describe('Sinon Stub', () => {
   let sandbox: SinonSandbox;
-  let superBark: SinonStub;
+  let parentMethod: SinonStub;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    superBark = sandbox.stub(Parent.prototype, 'method').returns(null);
+    parentMethod = sandbox.stub(Parent.prototype, 'method').returns(null);
   });
 
   afterEach(() => {
@@ -22,7 +22,7 @@ describe('Sinon Stub', () => {
     });
 
     it(`can call through parent calls`, () => {
-      superBark.callThrough();
+      parentMethod.callThrough();
 
       const subject = new (class Child extends Parent {})(4);
 
