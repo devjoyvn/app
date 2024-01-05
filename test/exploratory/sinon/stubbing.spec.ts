@@ -1,44 +1,46 @@
 import sinon, { SinonSandbox, SinonStub } from 'sinon';
 
-describe('Sinon', () => {
+describe('Sinon Stub', () => {
   let sandbox: SinonSandbox;
   let superBark: SinonStub;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    superBark = sandbox.stub(Dog.prototype, 'bark').returns(null);
+    superBark = sandbox.stub(Parent.prototype, 'method').returns(null);
   });
 
   afterEach(() => {
     sandbox.restore();
   });
 
-  it(`can intercept parent calls`, () => {
-    const subject = new (class Puppy extends Dog {})(3);
+  describe('Stubbing parent method but not child method', () => {
+    it(`can intercept parent calls`, () => {
+      const subject = new (class Child extends Parent {})(3);
 
-    expect(subject.bark()).toBeNull();
-    expect(subject.barkCount).toEqual(3);
+      expect(subject.method()).toBeNull();
+      expect(subject.methodCallCount).toEqual(3);
+    });
+
+    it(`can call through parent calls`, () => {
+      superBark.callThrough();
+
+      const subject = new (class Child extends Parent {})(4);
+
+      expect(subject.method()).toEqual(5);
+      expect(subject.methodCallCount).toEqual(5);
+    });
   });
 
-  it(`can call through parent calls`, () => {
-    superBark.callThrough();
+  class Parent {
+    methodCallCount: number;
 
-    const subject = new (class Puppy extends Dog {})(4);
-
-    expect(subject.bark()).toEqual(5);
-    expect(subject.barkCount).toEqual(5);
-  });
-
-  class Dog {
-    barkCount;
-
-    constructor(barkCount?: number) {
-        this.barkCount = barkCount ?? 0;
+    constructor(initialMethodCallCount?: number) {
+      this.methodCallCount = initialMethodCallCount ?? 0;
     }
 
-    bark(): number | null {
-      this.barkCount++;
-      return this.barkCount;
+    method(): number | null {
+      this.methodCallCount++;
+      return this.methodCallCount;
     }
   }
 });
