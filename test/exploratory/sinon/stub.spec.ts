@@ -2,11 +2,9 @@ import sinon, { SinonSandbox, SinonStub } from 'sinon';
 
 describe('Sinon Stub', () => {
   let sandbox: SinonSandbox;
-  let parentMethod: SinonStub;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    parentMethod = sandbox.stub(Parent.prototype, 'method').returns(null);
   });
 
   afterEach(() => {
@@ -14,6 +12,12 @@ describe('Sinon Stub', () => {
   });
 
   describe('Stubbing parent method but not child method', () => {
+    let parentMethod: SinonStub;
+
+    beforeEach(() => {
+      parentMethod = sandbox.stub(Parent.prototype, 'method').returns(null);
+    });
+
     it(`can intercept parent calls`, () => {
       const subject = new (class Child extends Parent {})(3);
 
