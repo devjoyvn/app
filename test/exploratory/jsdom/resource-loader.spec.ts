@@ -1,19 +1,15 @@
 import { JSDOM, ResourceLoader, DOMWindow } from 'jsdom';
-import sinon, { SinonSandbox, SinonStub } from 'sinon';
+import sinon, { SinonStub } from 'sinon';
 
 describe('JSDOM Resource Loader', () => {
-  let sandbox: SinonSandbox;
   let parentFetch: SinonStub;
 
   beforeEach(() => {
-    sandbox = sinon.createSandbox();
-    parentFetch = sandbox
-      .stub(ResourceLoader.prototype, 'fetch')
-      .returns(null);
+    parentFetch = sinon.stub(ResourceLoader.prototype, 'fetch').returns(null);
   });
 
   afterEach(() => {
-    sandbox.restore();
+    sinon.restore();
   });
 
   describe(`fetch element option`, () => {
@@ -36,7 +32,7 @@ describe('JSDOM Resource Loader', () => {
         expect(parentFetch.calledOnce).toEqual(true);
       });
 
-      it('calls super.fetch on each img element even if they\'re equivalent', () => {
+      it("calls super.fetch on each img element even if they're equivalent", () => {
         const { window } = createJsdom(`
 <html>
     <body>
@@ -51,7 +47,7 @@ describe('JSDOM Resource Loader', () => {
         expect(element1).toBeInstanceOf(window.HTMLImageElement);
         expect(element1.nodeName).toEqual('IMG');
         expect(element1.src).toEqual('https://picsum.photos/200');
-        
+
         const element2 = parentFetch.getCall(1).args[1]
           ?.element as HTMLScriptElement;
         expect(element2).toBeInstanceOf(window.HTMLImageElement);

@@ -1,4 +1,4 @@
-import sinon, { SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
+import sinon, { SinonStub } from 'sinon';
 
 describe('Sinon Stub', () => {
   let parentConstructorCalled = false;
@@ -44,7 +44,8 @@ describe('Sinon Stub', () => {
         }
       }
 
-      Object.setPrototypeOf( // NOTE: if Child could be reused, it's important to `setPrototypeOf` back to `Parent` when done
+      Object.setPrototypeOf(
+        // NOTE: if Child could be reused, it's important to `setPrototypeOf` back to `Parent` when done
         Child,
         sinon.stub().callsFake(function () {
           stubCalledFake = true;

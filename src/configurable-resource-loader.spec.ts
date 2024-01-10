@@ -1,25 +1,23 @@
 import { ResourceLoader } from 'jsdom';
 import { ConfigurableResourceLoader } from './configurable-resource-loader';
 import * as urlMatchesModule from './url-matches';
-import sinon, { SinonSandbox, SinonStub } from 'sinon';
+import sinon, { SinonStub } from 'sinon';
 
 describe('Configurable Resource Loader', () => {
-  let sandbox: SinonSandbox;
   let parentFetch: SinonStub;
   let urlMatches: SinonStub;
 
   beforeEach(() => {
-    sandbox = sinon.createSandbox();
-    parentFetch = sandbox
+    parentFetch = sinon
       .stub(ResourceLoader.prototype, 'fetch')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .returns({} as any);
 
-    urlMatches = sandbox.stub(urlMatchesModule, 'urlMatches');
+    urlMatches = sinon.stub(urlMatchesModule, 'urlMatches');
   });
 
   afterEach(() => {
-    sandbox.restore();
+    sinon.restore();
   });
 
   it('extends jsdom.ResourceLoader', () => {

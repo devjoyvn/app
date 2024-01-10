@@ -1,21 +1,19 @@
 import * as jsdom from 'jsdom';
 import { ConfigurableResourceLoader } from './index';
-import sinon, { SinonSandbox, SinonStub } from 'sinon';
+import sinon, { SinonStub } from 'sinon';
 
 describe('Acceptance Test', () => {
-  let sandbox: SinonSandbox;
   let parentFetch: SinonStub;
 
   beforeEach(() => {
-    sandbox = sinon.createSandbox();
-    parentFetch = sandbox
+    parentFetch = sinon
       .stub(jsdom.ResourceLoader.prototype, 'fetch')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .returns({} as any);
   });
 
   afterEach(() => {
-    sandbox.restore();
+    sinon.restore();
   });
 
   it('accepts with whitelisted only', () => {
