@@ -4,10 +4,14 @@ import * as urlMatchesModule from './url-matches';
 import sinon, { SinonStub } from 'sinon';
 
 describe('Configurable Resource Loader', () => {
+  let originalPrototype: object;
   let parentFetch: SinonStub;
   let urlMatches: SinonStub;
 
   beforeEach(() => {
+    originalPrototype = Object.getPrototypeOf(ConfigurableResourceLoader);
+    Object.setPrototypeOf(ConfigurableResourceLoader, sinon.stub());
+
     parentFetch = sinon
       .stub(ResourceLoader.prototype, 'fetch')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -18,6 +22,7 @@ describe('Configurable Resource Loader', () => {
 
   afterEach(() => {
     sinon.restore();
+    Object.setPrototypeOf(ConfigurableResourceLoader, originalPrototype);
   });
 
   it('extends jsdom.ResourceLoader', () => {
