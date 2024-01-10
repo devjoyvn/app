@@ -6,7 +6,7 @@ import {
 } from 'jsdom';
 import { Matcher, urlMatches } from './url-matches';
 
-export type ConfigurableResourceLoaderOptions =
+type NewOptions =
   | {
       whitelist: Matcher[];
     }
@@ -18,14 +18,35 @@ export type ConfigurableResourceLoaderOptions =
       blacklist: Matcher[];
     };
 
+export type ConfigurableResourceLoaderOptions =
+  ResourceLoaderConstructorOptions & NewOptions;
+
 export class ConfigurableResourceLoader extends ResourceLoader {
   options: ConfigurableResourceLoaderOptions;
 
-  constructor(
-    options?: /*ResourceLoaderConstructorOptions | */ ConfigurableResourceLoaderOptions
-  ) {
-    super();
+  constructor(options?: ConfigurableResourceLoaderOptions) {
+    super(
+      ConfigurableResourceLoader.strictlyResourceLoaderConstructorOptions(
+        options
+      )
+    );
     this.options = options ?? { whitelist: [] };
+  }
+
+  private static strictlyResourceLoaderConstructorOptions(
+    options?: ConfigurableResourceLoaderOptions
+  ):
+    | Omit<
+        ConfigurableResourceLoaderOptions,
+        keyof NewOptions
+      >
+    | undefined {
+    if (options === undefined) {
+      return undefined;
+    }
+
+    const { strictSSL, proxy, userAgent } = options;
+    return { strictSSL, proxy, userAgent };
   }
 
   fetch(url: string, options: FetchOptions): AbortablePromise<Buffer> | null {

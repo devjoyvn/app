@@ -5,12 +5,17 @@ import sinon, { SinonStub } from 'sinon';
 
 describe('Configurable Resource Loader', () => {
   let originalPrototype: object;
+  let parentConstructor: SinonStub;
   let parentFetch: SinonStub;
   let urlMatches: SinonStub;
 
   beforeEach(() => {
     originalPrototype = Object.getPrototypeOf(ConfigurableResourceLoader);
-    Object.setPrototypeOf(ConfigurableResourceLoader, sinon.stub());
+    parentConstructor = sinon.stub();
+    Object.setPrototypeOf(
+      ConfigurableResourceLoader,
+      parentConstructor
+    );
 
     parentFetch = sinon
       .stub(ResourceLoader.prototype, 'fetch')
@@ -38,6 +43,25 @@ describe('Configurable Resource Loader', () => {
     subject.fetch('url', {});
 
     expect(parentFetch.calledOnce).toEqual(true);
+  });
+
+  it('forwards ResourceLoaderConstructorOptions to parent constructor', () => {
+    new ConfigurableResourceLoader({
+      strictSSL: true,
+      proxy: 'proxyString',
+      userAgent: 'userAgentsString',
+      whitelist: ['whitelist 1'],
+      blacklist: ['blacklist 1'],
+    });
+
+    expect(parentConstructor.calledOnce).toEqual(true);
+    expect(parentConstructor.getCall(0).args).toEqual([
+      {
+        strictSSL: true,
+        proxy: 'proxyString',
+        userAgent: 'userAgentsString',
+      },
+    ]);
   });
 
   describe(`whitelist only`, () => {
