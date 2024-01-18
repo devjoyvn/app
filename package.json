@@ -1,7 +1,7 @@
 {
   "name": "jsdom-configurable-resource-loader",
   "description": "A JSDOM ResourceLoader with configuration options to whitelist and blacklist resources.",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -42,5 +42,10 @@
   "peerDependencies": {
     "canvas": "^2.11.2",
     "jsdom": "^23.2.0"
+  },
+  "peerDependenciesMeta": {
+    "canvas": {
+      "optional": true
+    }
   }
 }
