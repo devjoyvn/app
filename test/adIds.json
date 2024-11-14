@@ -1,0 +1,21 @@
+{
+  "admob_banner": "ca-app-pub-8704589597859780/6216928795",
+  "admob_inter": "ca-app-pub-3940256099942544/4411468910",
+  "admob_inter_splash": "ca-app-pub-3940256099942544/4411468910",
+  "admob_reward": "ca-app-pub-8704589597859780/6773863386",
+  "admob_reward_interstitial": "ca-app-pub-8704589597859780/6025357102",
+  "admob_small_native": "ca-app-pub-8704589597859780/4968222460",
+  "admob_medium_native": "ca-app-pub-8704589597859780/2086112095",
+  "admob_manual_native": "ca-app-pub-8704589597859780/3702446095",
+  "admob_appopen": "ca-app-pub-3940256099942544/5575463023",
+  "applovin_banner": "e26c8925fb3bbb29",
+  "applovin_inter": "fef3217f70caa724",
+  "applovin_inter_splash": "bea92adc0523f330",
+  "applovin_reward": "74e3362232f27029",
+  "applovin_small_native": "32d343b22f6c7194",
+  "applovin_medium_native": "5da06ff723fcc7de",
+  "applovin_manual_native": "56f918ae4ee3db81",
+  "applovin_appopen": "4ddc7ebf60db9c51",
+  "applovin_id": "thBvks6JBM4So0TlvZyJ73aho7Y4MciKrfwCxxkiwJk=",
+  "splash_mode": "admob"
+}
